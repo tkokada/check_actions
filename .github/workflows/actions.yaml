@@ -25,5 +25,22 @@ jobs:
           python setup.py install
 
       - name: Unit Test
-        run: pytest -v tests
+        run: pytest -v tests --junit-xml pytest-${{ matrix.os }}-${{ matrix.python-version }}.xml
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test Results (Python ${{ matrix.python-version }})
+          path: pytest-${{ matrix.os }}-${{ matrix.python-version }}.xml
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: artifacts/**/*.xm
 
