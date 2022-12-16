@@ -25,34 +25,5 @@ jobs:
           python setup.py install
 
       - name: Unit Test
-        run: pytest -v tests --junit-xml pytest-${{ matrix.os }}-${{ matrix.python-version }}.xml
+        run: pytest -v tests
 
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test Results (Python ${{ matrix.python-version }})
-          path: pytest-${{ matrix.os }}-${{ matrix.python-version }}.xml
-
-  publish-test-results:
-    name: "Publish Tests Results"
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    permissions:
-      checks: write
-
-      # only needed unless run with comment_mode: off
-      pull-requests: write
-
-    if: always()
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          path: artifacts
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        with:
-          files: artifacts/**/*.xm
